@@ -35,4 +35,8 @@ public class MaskingPattern {
 
         return sb.toString();
     }
+
+	public String getRegex() {
+		return pattern.pattern();
+	}
 }
