@@ -61,6 +61,7 @@ public class MaskingConverter extends MessageConverter {
 	
 		
 		patterns.add(MaskingPreset.PASSWORD.createPattern());
+		patterns.add(MaskingPreset.USER_NAME.createPattern());
 	}
 	
 	private void addOrOverridePattern(String option) {
