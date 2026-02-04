@@ -44,6 +44,17 @@ public enum MaskingStrategy {
         }
     },
     
+    NONE  {
+        @Override
+        public String mask(String value, String param) {
+            return value;
+        }
+    },
+    
+    /**
+     * 이메일 마스킹: 아이디 일부만 표시
+     * user@example.com → us**@example.com
+     */
     EMAIL {
         @Override
         public String mask(String value, String param) {
