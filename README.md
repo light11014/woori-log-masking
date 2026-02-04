@@ -204,16 +204,6 @@ public class PaymentTest {
 
 ---
 
-### EMAIL
-이메일 아이디 일부만 마스킹
-
-```xml
-<pattern>%msg{EMAIL}%n</pattern>
-```
-- `user@example.com` → `us**@example.com`
-
----
-
 ## 환경별 설정
 
 ### 개발 환경 - 최소 마스킹
