@@ -32,7 +32,7 @@ public enum MaskingStrategy {
                 return "****";
             }
             
-            String[] params = param.split(",");
+            String[] params = param.split("-");
             int prefixLen = Integer.parseInt(params[0]);
             int suffixLen = params.length > 1 ? Integer.parseInt(params[1]) : 0;
             

@@ -9,22 +9,22 @@ public enum MaskingPreset {
 	/**
 	 * 카드번호: 1234-5678-9012-3456 → 1234-****-****-3456
 	 */
-	CARD_NUMBER("\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}", MaskingStrategy.PARTIAL, "4,4"),
+	CARD_NUMBER("\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}", MaskingStrategy.PARTIAL, "4-4"),
 
 	/**
 	 * 주민등록번호: 901234-1234567 → 901234-****
 	 */
-	SSN("\\d{6}[- ]?\\d{7}", MaskingStrategy.PARTIAL, "6,0"),
+	SSN("\\d{6}[- ]?\\d{7}", MaskingStrategy.PARTIAL, "6-0"),
 
 	/**
 	 * 계좌번호: 110-12-345678 → 110-****
 	 */
-	ACCOUNT_NUMBER("\\d{3}[- ]?\\d{2}[- ]?\\d{4,6}", MaskingStrategy.PARTIAL, "3,0"),
+	ACCOUNT_NUMBER("\\d{3}[- ]?\\d{2}[- ]?\\d{4,6}", MaskingStrategy.PARTIAL, "3-0"),
 
 	/**
 	 * 전화번호: 010-1234-5678 → 010-****-5678
 	 */
-	PHONE("01[0-9][- ]?\\d{4}[- ]?\\d{4}", MaskingStrategy.PARTIAL, "3,4"),
+	PHONE("01[0-9][- ]?\\d{4}[- ]?\\d{4}", MaskingStrategy.PARTIAL, "3-4"),
 
 	/**
 	 * 이메일: user@example.com → us**@example.com
