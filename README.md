@@ -126,9 +126,15 @@ public class PaymentTest {
 <br>
 
 ### 2. 선택적 마스킹
-
+- 주민등록번호, 전화번호에만 마스킹을 적용
 ```xml
-<pattern>%d - %mask{CARD_NUMBER, PHONE}%n</pattern>
+<pattern>%d - %mask{
+    EMAIL:PARTIAL:NONE 
+    CARD_NUMBER:NONE 
+    ACCOUNT_NUMBER:NONE
+    PASSWORD:NONE
+    USER_NAME:NONE
+}%n</pattern>
 ```
 
 **NONE 전략을 사용**하면 해당 프리셋의 마스킹을 비활성화할 수 있습니다.
