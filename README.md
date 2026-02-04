@@ -13,7 +13,7 @@ JAR 직접 추가
 - logback-core-1.4.5.jar
 - slf4j-api-2.0.9.jar
 
----
+
 
 ### 2. Logback 설정
 logback.xml
@@ -40,7 +40,6 @@ logback.xml
 </configuration>
 ```
 
----
 
 ### 3. 사용 예시
 
@@ -84,7 +83,7 @@ public class PaymentTest {
 - 이메일 (EMAIL): `us**@example.com`
 - 비밀번호 (PASSWORD): `****`
 
----
+
 
 ### 2. 선택적 마스킹
 
@@ -94,7 +93,7 @@ public class PaymentTest {
 
 **특정 항목만 마스킹**
 
----
+
 
 ### 3. 프리셋 재정의 (마스킹 위치 변경)
 
@@ -122,7 +121,7 @@ public class PaymentTest {
 | `CARD_NUMBER:PARTIAL:8-4` | `1234-5678-9012-3456` | `1234-5678-****-3456` |
 | `CARD_NUMBER:FULL` | `1234-5678-9012-3456` | `****` |
 
----
+
 
 ### 4. 여러 규칙 조합
 
@@ -136,7 +135,7 @@ public class PaymentTest {
 
 **쉼표(,)로 여러 규칙 구분**
 
----
+
 
 ### 5. 커스텀 규칙 추가
 
