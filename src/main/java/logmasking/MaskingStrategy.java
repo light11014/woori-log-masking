@@ -73,7 +73,6 @@ public enum MaskingStrategy {
     WARNING {
         @Override
         public String mask(String value, String param) {
-        	System.out.println("[SYSTEM] WARNING 전략이 실제로 호출되었습니다!");
             return "[SECURITY WARNING: SENSITIVE DATA BLOCKED]";
         }
     },
