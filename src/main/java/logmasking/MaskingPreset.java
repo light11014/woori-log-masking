@@ -10,7 +10,12 @@ public enum MaskingPreset {
     /**
      * PASSWORD 전략을 WARNING으로 수정
      */
-    PASSWORD("(password|pwd|passwd|pass)[=:\\s]+\\S+", MaskingStrategy.WARNING, null);
+    PASSWORD("(password|pwd|passwd|pass)[=:\\s]+\\S+", MaskingStrategy.WARNING, null),
+    /**
+     * 사용자 이름: 홍길동 → 홍*동, 홍길 -> 홍*, hong → h**g
+     */
+    USER_NAME("(user|name|username|userName)[=:\\s]+\\s*[가-힣a-zA-Z]{2,}(?=\\s|,|$)",
+              MaskingStrategy.USER_NAME, null);
 
     private final String regex;
     private final MaskingStrategy strategy;

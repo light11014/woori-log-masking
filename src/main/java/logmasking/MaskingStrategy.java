@@ -76,6 +76,45 @@ public enum MaskingStrategy {
         	System.out.println("[SYSTEM] WARNING 전략이 실제로 호출되었습니다!");
             return "[SECURITY WARNING: SENSITIVE DATA BLOCKED]";
         }
+    },
+
+    /**
+     * 사용자 이름 마스킹
+     */
+    USER_NAME {
+        @Override
+        public String mask(String value, String param) {
+            // key=value 구조 분리
+            int idx = value.indexOf('=');
+            if (idx == -1 || idx == value.length() - 1) {
+                return value; // 예상하지 못한 형식은 그대로 반환
+            }
+
+            String key = value.substring(0, idx + 1); // username=
+            String name = value.substring(idx + 1).trim(); // 실제 이름
+
+            int len = name.length();
+
+            if (len == 2) {
+                return key + name.charAt(0) + "*";
+            }
+
+            if (len == 3) {
+                return key + name.charAt(0) + "*" + name.charAt(2);
+            }
+
+            if (len >= 4) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(name.charAt(0));
+                for (int i = 1; i < len - 1; i++) {
+                    sb.append("*");
+                }
+                sb.append(name.charAt(len - 1));
+                return key + sb;
+            }
+
+            return key + "*";
+        }
     };
 
     public abstract String mask(String value, String param);
