@@ -23,17 +23,17 @@ public class MaskingConverter extends MessageConverter {
 		super.start();
 
 		List<String> options = getOptionList();
-		patterns = new ArrayList<>();
+		
+		// 1. 항상 기본 프리셋 먼저 적용
+	    patterns = new ArrayList<>();
+	    addDefaultPresets();
 
-		if (options == null || options.isEmpty()) {
-			// 옵션 없음 → 기본 프리셋 전체 적용
-			addDefaultPresets();
-		} else {
-			// 옵션 있음 → 지정된 것만 적용
-			for (String option : options) {
-				addPattern(option.trim());
-			}
-		}
+	    // 2. 옵션이 있으면 기본값을 override / 추가
+	    if (options != null && !options.isEmpty()) {
+	        for (String option : options) {
+	            addOrOverridePattern(option.trim());
+	        }
+	    }
 	}
 
 	@Override
@@ -60,56 +60,68 @@ public class MaskingConverter extends MessageConverter {
 		patterns.add(MaskingPreset.EMAIL.createPattern());
 		patterns.add(MaskingPreset.PASSWORD.createPattern());
 	}
+	
+	private void addOrOverridePattern(String option) {
+	    MaskingPattern newPattern = parsePattern(option);
 
-	private void addPattern(String option) {
-		String[] parts = option.split(":");
+	    if (newPattern == null) {
+	        return;
+	    }
 
-		if (parts.length == 1) {
-			// 단순 프리셋 이름만: "CARD_NUMBER"
-			try {
-				MaskingPreset preset = MaskingPreset.valueOf(parts[0].toUpperCase());
-				patterns.add(preset.createPattern());
-				return;
-			} catch (IllegalArgumentException e) {
-				addError("알 수 없는 프리셋: " + parts[0]);
-				return;
-			}
-		}
-
-		// 프리셋 재정의 또는 커스텀 규칙
-		String name = parts[0];
-
-		// 프리셋 재정의 확인: "PHONE:PARTIAL:0,4"
-		try {
-			MaskingPreset preset = MaskingPreset.valueOf(name.toUpperCase());
-
-			// 프리셋의 정규식 사용 + 새로운 전략
-			String regex = preset.getRegex();
-			MaskingStrategy strategy = MaskingStrategy.valueOf(parts[1].toUpperCase());
-			String param = parts.length >= 3 ? parts[2] : null;
-
-			patterns.add(new MaskingPattern(regex, strategy, param));
-			return;
-		} catch (IllegalArgumentException e) {
-			// 프리셋 아님 → 커스텀 규칙으로 처리
-		}
-
-		// 커스텀 규칙: "MY_RULE:정규식:전략:파라미터"
-		if (parts.length >= 2) {
-			String regex = parts[1];
-			MaskingStrategy strategy = MaskingStrategy.FULL;
-			String param = null;
-
-			if (parts.length >= 3) {
-				try {
-					strategy = MaskingStrategy.valueOf(parts[2].toUpperCase());
-					param = parts.length >= 4 ? parts[3] : null;
-				} catch (IllegalArgumentException e) {
-					addError("알 수 없는 마스킹 전략: " + parts[2]);
-				}
-			}
-
-			patterns.add(new MaskingPattern(regex, strategy, param));
-		}
+	    // regex 기준 override
+	    patterns.removeIf(p -> p.getRegex().equals(newPattern.getRegex()));
+	    patterns.add(newPattern);
 	}
+	
+	private MaskingPattern parsePattern(String option) {
+	    String[] parts = option.split(":");
+
+	    // 단순 프리셋: "CARD_NUMBER"
+	    if (parts.length == 1) {
+	        try {
+	            MaskingPreset preset = MaskingPreset.valueOf(parts[0].toUpperCase());
+	            return preset.createPattern();
+	        } catch (IllegalArgumentException e) {
+	            addError("알 수 없는 프리셋: " + parts[0]);
+	            return null;
+	        }
+	    }
+
+	    String name = parts[0];
+
+	    // 프리셋 재정의: "PHONE:PARTIAL:0,4"
+	    try {
+	        MaskingPreset preset = MaskingPreset.valueOf(name.toUpperCase());
+
+	        String regex = preset.getRegex();
+	        MaskingStrategy strategy = MaskingStrategy.valueOf(parts[1].toUpperCase());
+	        String param = parts.length >= 3 ? parts[2] : null;
+
+	        return new MaskingPattern(regex, strategy, param);
+	    } catch (IllegalArgumentException ignored) {
+	        // 프리셋 아님 → 커스텀
+	    }
+
+	    // 3️⃣ 커스텀 규칙: "MY_RULE:정규식:전략:파라미터"
+	    if (parts.length >= 2) {
+	        String regex = parts[1];
+	        MaskingStrategy strategy = MaskingStrategy.FULL;
+	        String param = null;
+
+	        if (parts.length >= 3) {
+	            try {
+	                strategy = MaskingStrategy.valueOf(parts[2].toUpperCase());
+	                param = parts.length >= 4 ? parts[3] : null;
+	            } catch (IllegalArgumentException e) {
+	                addError("알 수 없는 마스킹 전략: " + parts[2]);
+	            }
+	        }
+
+	        return new MaskingPattern(regex, strategy, param);
+	    }
+
+	    return null;
+	}
+
+	
 }
