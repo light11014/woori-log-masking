@@ -129,7 +129,7 @@ public class PaymentTest {
 - 주민등록번호, 전화번호에만 마스킹을 적용
 ```xml
 <pattern>%d - %mask{
-    EMAIL:PARTIAL:NONE 
+    EMAIL:NONE 
     CARD_NUMBER:NONE 
     ACCOUNT_NUMBER:NONE
     PASSWORD:NONE
