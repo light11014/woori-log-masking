@@ -58,6 +58,8 @@ public class MaskingConverter extends MessageConverter {
 		patterns.add(MaskingPreset.ACCOUNT_NUMBER.createPattern());
 		patterns.add(MaskingPreset.PHONE.createPattern());
 		patterns.add(MaskingPreset.EMAIL.createPattern());
+	
+		
 		patterns.add(MaskingPreset.PASSWORD.createPattern());
 	}
 	
