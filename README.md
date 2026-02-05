@@ -7,6 +7,10 @@
 ## 빠른 시작
 
 ### 1. 의존성 추가
+**Maven Central 배포 링크:**
+[Add the dependency](https://central.sonatype.com/artifact/io.github.realjimin/log-masking/1.0.1/overview)
+
+
 JAR 직접 추가
 - log-masking-1.0.0.jar
 - logback-classic-1.4.5.jar
