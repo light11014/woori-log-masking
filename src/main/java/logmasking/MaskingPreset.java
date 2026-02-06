@@ -1,11 +1,11 @@
 package logmasking;
 
 public enum MaskingPreset {
-    CARD_NUMBER("\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}", MaskingStrategy.PARTIAL, "4-4"),
-    SSN("\\d{6}[- ]?\\d{7}", MaskingStrategy.PARTIAL, "6-0"),
-    ACCOUNT_NUMBER("\\d{3}[- ]?\\d{2}[- ]?\\d{4,6}", MaskingStrategy.PARTIAL, "3-0"),
-    PHONE("01[0-9][- ]?\\d{4}[- ]?\\d{4}", MaskingStrategy.PARTIAL, "3-4"),
-    EMAIL("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", MaskingStrategy.EMAIL, null),
+	CARD_NUMBER("\\d{4}-\\d{4}-\\d{4}-\\d{4}", MaskingStrategy.PARTIAL, "4-4"),
+	SSN("\\d{6}-\\d{7}", MaskingStrategy.PARTIAL, "6-0"),
+	ACCOUNT_NUMBER("\\d{3}-\\d{2}-\\d{4,6}", MaskingStrategy.PARTIAL, "3-0"),
+	PHONE("01[0-9]-\\d{4}-\\d{4}", MaskingStrategy.PARTIAL, "3-4"),
+	EMAIL("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", MaskingStrategy.EMAIL, null),
     
     /**
      * PASSWORD 전략을 WARNING으로 수정
