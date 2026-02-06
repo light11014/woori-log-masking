@@ -37,6 +37,6 @@ public class MaskingPattern {
     }
 
 	public String getRegex() {
-		return pattern.pattern();
+		return this.pattern.pattern();
 	}
 }
