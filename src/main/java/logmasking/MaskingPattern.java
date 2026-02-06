@@ -8,13 +8,11 @@ import java.util.regex.Pattern;
  * 정규식으로 민감정보를 찾아서 마스킹 전략에 따라 처리
  */
 public class MaskingPattern {
-	private final String regex;
     private final Pattern pattern;
     private final MaskingStrategy strategy;
     private final String param;
 
     public MaskingPattern(String regex, MaskingStrategy strategy, String param) {
-    	this.regex = regex;
         this.pattern = Pattern.compile(regex);
         this.strategy = strategy;
         this.param = param;
@@ -39,6 +37,6 @@ public class MaskingPattern {
     }
 
 	public String getRegex() {
-		return this.regex;
+		return this.pattern.pattern();
 	}
 }

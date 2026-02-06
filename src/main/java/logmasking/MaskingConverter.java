@@ -53,13 +53,13 @@ public class MaskingConverter extends MessageConverter {
 	}
 
 	private void addDefaultPresets() {
-		patterns.add(MaskingPreset.CARD_NUMBER.createPattern());     // 16자리
-	    patterns.add(MaskingPreset.SSN.createPattern());             // 13자리
-	    patterns.add(MaskingPreset.PHONE.createPattern());           // 10~11자리
-	    patterns.add(MaskingPreset.ACCOUNT_NUMBER.createPattern());  // 짧고 범용적
-	    patterns.add(MaskingPreset.EMAIL.createPattern());
-	    patterns.add(MaskingPreset.PASSWORD.createPattern());
-	    patterns.add(MaskingPreset.USER_NAME.createPattern());
+		patterns.add(MaskingPreset.CARD_NUMBER.createPattern());
+		patterns.add(MaskingPreset.SSN.createPattern());
+		patterns.add(MaskingPreset.ACCOUNT_NUMBER.createPattern());
+		patterns.add(MaskingPreset.PHONE.createPattern());
+		patterns.add(MaskingPreset.EMAIL.createPattern());
+		patterns.add(MaskingPreset.PASSWORD.createPattern());
+		patterns.add(MaskingPreset.USER_NAME.createPattern());
 	}
 	
 	private void addOrOverridePattern(String option) {
