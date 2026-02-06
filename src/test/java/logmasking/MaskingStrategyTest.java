@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import exception.InvalidMaskingParameterException;
@@ -40,6 +41,22 @@ class MaskingStrategyTest {
 
         // Then (JUnit 5 순서: expected, actual, message)
         assertEquals(expected, actual, "하이픈을 만날 때마다 마스킹이 새로 시작되어 분절된 형태로 출력되어야 합니다.");
+    }
+
+    @ParameterizedTest(name = "value={0}, param={1}")
+    @CsvSource({
+            "'1234', '2-2'",
+            "'123456', '5-3'",
+            "'123-456', '4-2'",
+            "'123-456', '3-3'",
+    })
+    @DisplayName("시나리오 2:유효 문자의 총 개수가 노출 설정값의 합(prefix + suffix)보다 작거나 같으면, "
+            + "InvalidMaskingParameterException 발생")
+    void mask_invalidPrefixAndSuffix_throwsException(String value, String param) {
+        assertThrows(
+                InvalidMaskingParameterException.class,
+                () -> MaskingStrategy.PARTIAL.mask(value, param)
+        );
     }
 
     @Test

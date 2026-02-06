@@ -19,8 +19,9 @@ public enum MaskingStrategy {
 		    
 			String cleaned = value.replaceAll("[^a-zA-Z0-9]", "");
 
-			if (cleaned.length() <= prefixLen + suffixLen)
-				return "****";
+			if (cleaned.length() <= prefixLen + suffixLen) {
+				throw new InvalidMaskingParameterException("prefix와 suffix의 합은 값의 길이보다 작아야 합니다.");
+			}
 
 			int visibleChars = 0;
 			StringBuilder result = new StringBuilder();
