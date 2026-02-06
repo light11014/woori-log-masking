@@ -7,13 +7,17 @@
 ## 빠른 시작
 
 ### 1. 의존성 추가
+**Maven Central 배포 링크:**
+[Add the dependency](https://central.sonatype.com/artifact/io.github.realjimin/log-masking/1.0.1/overview)
+
+
 JAR 직접 추가
 - log-masking-1.0.0.jar
 - logback-classic-1.4.5.jar
 - logback-core-1.4.5.jar
 - slf4j-api-2.0.9.jar
 
-
+<br>
 
 ### 2. Logback 설정
 logback.xml
@@ -26,20 +30,31 @@ logback.xml
     <conversionRule conversionWord="mask"
                     converterClass="logmasking.MaskingConverter" />
 
+    <!-- 콘솔 출력 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <!-- %msg를 그대로 사용 -->
+            <!-- %mask를 사용 (옵션 없으면 기본 프리셋 전체 적용) -->
             <pattern>%d{HH:mm:ss} - %mask%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 파일 출력 -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level - %mask%n</pattern>
         </encoder>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
     </root>
 
 </configuration>
 ```
 
+<br>
 
 ### 3. 사용 예시
 
@@ -52,8 +67,9 @@ public class PaymentTest {
 
     public static void main(String[] args) {
         log.info("결제 요청: 카드={}, 금액={}", "1234-5678-9012-3456", 10000);
-        log.info("고객 정보: 주민번호={}, 연락처={}", 
+        log.info("고객 정보: 주민번호={}, 연락처={}, username=홍길동", 
                  "901234-1234567", "010-1234-5678");
+        log.info("이메일: user@example.com, password=secret123");
     }
 }
 ```
@@ -62,40 +78,74 @@ public class PaymentTest {
 
 ```
 12:34:56 - 결제 요청: 카드=1234-****-****-3456, 금액=10000
-12:34:56 - 고객 정보: 주민번호=901234-****, 연락처=010-****-5678
+12:34:56 - 고객 정보: 주민번호=901234-****, 연락처=010-****-5678, username=홍*동
+12:34:56 - 이메일: us**@example.com, [SECURITY WARNING: SENSITIVE DATA BLOCKED]
 ```
+---
+
+<br>
+
+## 프리셋 목록
+
+라이브러리가 자동으로 마스킹하는 민감정보 항목입니다. ([마스킹 전략](#마스킹-전략) 참고)
+
+| 프리셋 | 설명 | 정규식 | 기본 전략 | 기본 파라미터 | 예시 |
+|--------|------|--------|----------|--------------|------|
+| `CARD_NUMBER` | 카드번호 | `\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}` | PARTIAL | `4-4` | `1234-****-****-3456` |
+| `SSN` | 주민등록번호 | `\d{6}[- ]?\d{7}` | PARTIAL | `6-0` | `901234-****` |
+| `ACCOUNT_NUMBER` | 계좌번호 | `\d{3}[- ]?\d{2}[- ]?\d{4,6}` | PARTIAL | `3-0` | `110-****` |
+| `PHONE` | 전화번호 | `01[0-9][- ]?\d{4}[- ]?\d{4}` | PARTIAL | `3-4` | `010-****-5678` |
+| `EMAIL` | 이메일 | `[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}` | EMAIL | null | `us**@example.com` |
+| `PASSWORD` | 비밀번호 | `(password\|pwd\|passwd\|pass)[=:\s]+\S+` | WARNING | null | `[SECURITY WARNING: SENSITIVE DATA BLOCKED]` |
+| `USER_NAME` | 사용자 이름 | `(user\|name\|username\|userName)[=:\s]+\s*[가-힣a-zA-Z]{2,}(?=\s\|,\|$)` | USER_NAME | null | `username=홍*동` |
+
+<br>
 
 ---
 
 ## 사용법
+이 라이브러리는 **항상 모든 기본 프리셋을 먼저 적용**한 후, 옵션으로 지정된 설정으로 **오버라이드** 또는 **추가**합니다.
 
-### 1. 기본 사용 (자동 마스킹)
+```xml
+<!-- 옵션 없음 → 7개 기본 프리셋 모두 적용 -->
+<pattern>%mask%n</pattern>
+
+<!-- 옵션 있음 → 기본 프리셋 + 옵션의 오버라이드/추가 -->
+<pattern>%mask{PHONE:PARTIAL:7-0}%n</pattern>
+```
+- `%mask` 만 사용하면 **모든 프리셋**이 적용됩니다
+- 옵션을 추가하면 해당 프리셋의 설정만 **덮어쓰기**합니다
+- **특정 항목만 마스킹하고 싶다면** 필요 없는 항목에 `NONE` 전략을 사용하세요
+
+<br>
+
+### 1. 기본 사용 (모든 프리셋 자동 적용)
 
 ```xml
 <pattern>%d - %mask%n</pattern>
 ```
 
-**자동으로 마스킹되는 항목:**
-- 카드번호 (CARD_NUMBER): `1234-****-****-3456`
-- 주민등록번호 (SSN): `901234-****`
-- 계좌번호 (ACCOUNT_NUMBER): `110-****`
-- 전화번호 (PHONE): `010-****-5678`
-- 이메일 (EMAIL): `us**@example.com`
-- 비밀번호 (PASSWORD): `****`
+위 [프리셋 목록](#프리셋-목록)의 7개 항목이 모두 자동으로 마스킹됩니다.
 
-
+<br>
 
 ### 2. 선택적 마스킹
-
+- 주민등록번호, 전화번호에만 마스킹을 적용
 ```xml
-<pattern>%d - %mask{CARD_NUMBER, PHONE}%n</pattern>
+<pattern>%d - %mask{
+    EMAIL:NONE 
+    CARD_NUMBER:NONE 
+    ACCOUNT_NUMBER:NONE
+    PASSWORD:NONE
+    USER_NAME:NONE
+}%n</pattern>
 ```
 
-**특정 항목만 마스킹**
+**NONE 전략을 사용**하면 해당 프리셋의 마스킹을 비활성화할 수 있습니다.
 
+<br>
 
-
-### 3. 프리셋 재정의 (마스킹 위치 변경)
+### 3. 프리셋 재정의 (마스킹 방식 변경)
 
 ```xml
 <pattern>%d - %mask{PHONE:PARTIAL:7-0}%n</pattern>
@@ -112,30 +162,23 @@ public class PaymentTest {
 | `PHONE:PARTIAL:3-0` | `010-1234-5678` | `010-****` |
 | `PHONE:FULL` | `010-1234-5678` | `****` |
 
-카드번호 예시
-
-| 설정 | 입력 | 출력 |
-|------|------|------|
-| `CARD_NUMBER` (기본) | `1234-5678-9012-3456` | `1234-****-****-3456` |
-| `CARD_NUMBER:PARTIAL:6-4` | `1234-5678-9012-3456` | `1234-56****-3456` |
-| `CARD_NUMBER:PARTIAL:8-4` | `1234-5678-9012-3456` | `1234-5678-****-3456` |
-| `CARD_NUMBER:FULL` | `1234-5678-9012-3456` | `****` |
-
-
+<br>
 
 ### 4. 여러 규칙 조합
 
 ```xml
-<pattern>%d - %msg{
+<pattern>%d - %mask{
     PHONE:PARTIAL:7-0,
     CARD_NUMBER:PARTIAL:6-4,
     SSN:FULL
 }%n</pattern>
 ```
 
-**쉼표(,)로 여러 규칙 구분**
+- 쉼표로 구분하되 **공백 없이** 작성 권장
+- 각 옵션은 해당 프리셋만 오버라이드
+- 지정하지 않은 프리셋은 기본값 유지
 
-
+<br>
 
 ### 5. 커스텀 규칙 추가
 
@@ -148,7 +191,7 @@ public class PaymentTest {
 예시
 
 ```xml
-<pattern>%d - %msg{
+<pattern>%d - %mask{
     CARD_NUMBER,
     EMPLOYEE_ID:EMP\d{6}:PARTIAL:3-0,
     ORDER_NO:ORD\d{10}:PARTIAL:4-2
@@ -156,23 +199,12 @@ public class PaymentTest {
 ```
 
 **결과:**
-- `EMP123456` → `EMP123****`
-- `ORD1234567890` → `ORD1234****90`
+- 기본 7개: CARD_NUMBER, SSN, ACCOUNT_NUMBER, PHONE, EMAIL, PASSWORD, USER_NAME (기본값 적용)
+- 추가 2개: `EMP123456` → `EMP123****`, `ORD1234567890` → `ORD1234****90`
 
 ---
 
-## 프리셋 목록
-
-| 프리셋 | 정규식 | 기본 동작 | 예시 |
-|--------|--------|----------|------|
-| `CARD_NUMBER` | `\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}` | 앞4/뒤4 표시 | `1234-****-****-3456` |
-| `SSN` | `\d{6}[- ]?\d{7}` | 앞6자리만 | `901234-****` |
-| `ACCOUNT_NUMBER` | `\d{3}[- ]?\d{2}[- ]?\d{4,6}` | 은행코드만 | `110-****` |
-| `PHONE` | `01[0-9][- ]?\d{4}[- ]?\d{4}` | 앞3/뒤4 표시 | `010-****-5678` |
-| `EMAIL` | `[a-zA-Z0-9._%+-]+@[...]` | 아이디 일부 | `us**@example.com` |
-| `PASSWORD` | `(password\|pwd\|...)[=:\s]+\S+` | 전체 마스킹 | `****` |
-
----
+<br>
 
 ## 마스킹 전략
 
@@ -184,7 +216,7 @@ public class PaymentTest {
 ```
 - `901234-1234567` → `****`
 
----
+<br>
 
 ### PARTIAL
 앞/뒤 일부만 표시, 중간 마스킹
@@ -202,41 +234,23 @@ public class PaymentTest {
 - `7-0` → 앞 7자리(`0101234`) + 뒤 0자리 표시
 - 결과: `010-1234-****`
 
----
+<br>
 
-## 환경별 설정
+### WARNING
+민감정보를 완전히 차단하고 경고 문구 출력
 
-### 개발 환경 - 최소 마스킹
 ```xml
-<springProfile name="local">
-    <appender name="CONSOLE">
-        <encoder>
-            <!-- 디버깅 편의를 위해 많이 표시 -->
-            <pattern>%d - %msg{CARD_NUMBER:PARTIAL:12-4}%n</pattern>
-        </encoder>
-    </appender>
-</springProfile>
+<pattern>%mask{PASSWORD}%n</pattern>
 ```
+- `password=secret123` → `[SECURITY WARNING: SENSITIVE DATA BLOCKED]`
+- 원본 데이터를 전혀 노출하지 않음
 
-### 스테이징 - 선택적 마스킹
-```xml
-<springProfile name="stage">
-    <appender name="CONSOLE">
-        <encoder>
-            <pattern>%d - %msg{CARD_NUMBER, SSN}%n</pattern>
-        </encoder>
-    </appender>
-</springProfile>
-```
+<br>
 
-### 프로덕션 - 전체 마스킹
+### NONE
+마스킹하지 않음 (원본 유지)
+
 ```xml
-<springProfile name="prod">
-    <appender name="FILE">
-        <encoder>
-            <!-- 기본 프리셋 전체 적용 -->
-            <pattern>%d - %msg%n</pattern>
-        </encoder>
-    </appender>
-</springProfile>
+<pattern>%mask{EMAIL:NONE}%n</pattern>
 ```
+- `user@example.com` → `user@example.com`
