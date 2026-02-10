@@ -147,11 +147,6 @@ public enum MaskingStrategy {
 			// prefix / suffix가 숫자가 아닌 경우
 			int prefix = Integer.parseInt(parts[0]);
 			int suffix = Integer.parseInt(parts[1]);
-			
-			// prefix 또는 suffix가 음수인 경우
-			if (prefix < 0 || suffix < 0) {
-				throw new InvalidMaskingParameterException(param);
-			}
 
 			return new int[] { prefix, suffix };
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import exception.InvalidMaskingParameterException;
@@ -16,7 +17,8 @@ import exception.InvalidMaskingParameterException;
 class MaskingStrategyTest {
     
     @ParameterizedTest
-    @ValueSource(strings = { "a-b", "3-", "-2", "3-2-1" })
+    @ValueSource(strings = { "a-b", "3-", "-2", "3-2-1", ""})
+    @NullSource
     @DisplayName("예외 시나리오: 파라미터가 형식에 맞지 않는 경우, InvalidMaskingParameterException가 발생한다.")
     void invalidParam_shouldThrowException(String param) {
         String value = "010-1234-5678";
