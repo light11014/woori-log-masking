@@ -284,6 +284,22 @@ public class PaymentTest {
 
 ### 2. `testScenario1_CardNumber`
 
+```java
+@Test
+    @DisplayName("시나리오 1: 실제 카드 번호 포맷에서 하이픈 위치를 유지하며 분절 마스킹이 정상적으로 처리된다.")
+    void testScenario1_CardNumber() {
+        // Given
+        String value = "1234-5678-9012-3456";
+        String param = "6-4";
+        String expected = "1234-56****-****-3456";
+
+        // When
+        String actual = MaskingStrategy.PARTIAL.mask(value, param);
+
+        // Then (JUnit 5 순서: expected, actual, message)
+        assertEquals(expected, actual, "하이픈을 만날 때마다 마스킹이 새로 시작되어 분절된 형태로 출력되어야 합니다.");
+    }
+```
 **설명**
 실제 카드 번호와 같이 하이픈(`-`)이 포함된 문자열에 대해
 하이픈 위치를 유지한 채 **분절 마스킹**이 정상적으로 수행되는지 검증합니다.
@@ -291,7 +307,7 @@ public class PaymentTest {
 **검증 포인트**
 
 * 하이픈을 기준으로 마스킹 영역이 새로 시작되는지
-* 결과 문자열의 형식과 가독성이 유지되는지
+* 결과 문자열의 형식이 유지되는지
 
 ---
 
@@ -315,6 +331,23 @@ public class PaymentTest {
 ---
 
 ### 4. `testScenario3_SingleMasking`
+
+```java
+@Test
+    @DisplayName("시나리오 3: 특수문자가 없는 연속된 데이터는 별표(****)를 단 한 번만 출력한다")
+    void testScenario3_SingleMasking() {
+        // Given
+        String value = "1234567890";
+        String param = "2-2";
+        String expected = "12****90";
+
+        // When
+        String actual = MaskingStrategy.PARTIAL.mask(value, param);
+
+        // Then (JUnit 5 순서: expected, actual, message)
+        assertEquals(expected, actual, "마스킹 영역 중간에 특수문자가 없으면 별표 덩어리는 하나만 존재해야 합니다.");
+    }
+```
 
 **설명**
 특수문자가 없는 연속된 문자열의 경우
