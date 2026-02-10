@@ -379,4 +379,8 @@ public class PaymentTest {
 
 ### 테스트 커버리지
 > 📸 **아래에 JaCoCo 커버리지 스크린샷을 첨부합니다.**
-<img width="1180" height="301" alt="image" src="https://github.com/user-attachments/assets/5a5294dc-09b1-4026-a397-0607728e2262" />
+<img width="1202" height="276" alt="Image" src="https://github.com/user-attachments/assets/ebe4fdaf-08d1-4470-ac96-d24289879d25" />
+
+<img width="850" height="500" alt="Image" src="https://github.com/user-attachments/assets/1562c148-0233-41f8-8180-1e213f0eecea" />
+
+<img width="500" height="347" alt="Image" src="https://github.com/user-attachments/assets/ef6243a9-58a7-48ba-8d45-fd5d857fcbb7" />
