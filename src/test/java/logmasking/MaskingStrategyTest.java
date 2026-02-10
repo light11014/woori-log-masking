@@ -43,16 +43,16 @@ class MaskingStrategyTest {
         assertEquals(expected, actual, "하이픈을 만날 때마다 마스킹이 새로 시작되어 분절된 형태로 출력되어야 합니다.");
     }
 
-    @ParameterizedTest(name = "value={0}, param={1}")
+    @ParameterizedTest(name = "[{index}] {2} (value={0}, param={1})")
     @CsvSource({
-            "'1234', '2-2'",
-            "'123456', '5-3'",
-            "'123-456', '4-2'",
-            "'123-456', '3-3'",
+            "'1234',     '2-2', '문자 길이 4, prefix+suffix=4 → 마스킹 불가'",
+            "'123456',   '5-3', '문자 길이 6, prefix+suffix=8 → 마스킹 불가'",
+            "'123-456',  '4-3', '하이픈 제외 유효문자 6, prefix+suffix=7'",
+            "'123-456',  '3-3', '하이픈 제외 유효문자 6, prefix+suffix=6'",
     })
-    @DisplayName("시나리오 2:유효 문자의 총 개수가 노출 설정값의 합(prefix + suffix)보다 작거나 같으면, "
+    @DisplayName("시나리오 2:유효 문자의 총 길이가 노출 설정값의 합(prefix + suffix)보다 작거나 같으면, "
             + "InvalidMaskingParameterException 발생")
-    void mask_invalidPrefixAndSuffix_throwsException(String value, String param) {
+    void mask_invalidPrefixAndSuffix_throwsException(String value, String param, String description) {
         assertThrows(
                 InvalidMaskingParameterException.class,
                 () -> MaskingStrategy.PARTIAL.mask(value, param)
