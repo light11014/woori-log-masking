@@ -29,7 +29,7 @@ class MaskingStrategyTest {
     }
     
     @Test
-    @DisplayName("시나리오 1: 실제 카드 번호 포맷에서 하이픈 위치를 유지하며 분절 마스킹한다")
+    @DisplayName("시나리오 1: 실제 카드 번호 포맷에서 하이픈 위치를 유지하며 분절 마스킹이 정상적으로 처리된다.")
     void testScenario1_CardNumber() {
         // Given
         String value = "1234-5678-9012-3456";
@@ -73,4 +73,5 @@ class MaskingStrategyTest {
         // Then (JUnit 5 순서: expected, actual, message)
         assertEquals(expected, actual, "마스킹 영역 중간에 특수문자가 없으면 별표 덩어리는 하나만 존재해야 합니다.");
     }
+
 }
